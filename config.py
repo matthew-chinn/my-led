@@ -1,55 +1,18 @@
-"""Settings for audio reactive LED strip"""
-from __future__ import print_function
-from __future__ import division
-import os
+from neopixel import *
 
-DEVICE = 'esp8266'
-"""Device used to control LED strip. Must be 'pi',  'esp8266' or 'blinkstick'
+# LED strip configuration:
+N_PIXELS      = 150      # Number of LED pixels.
+LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
+LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
+LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
+LED_BRIGHTNESS = 155     # Set to 0 for darkest and 255 for brightest
+LED_INVERT     = False # True to invert the signal (when using NPN transistor level shift)
+LED_CHANNEL    = 0
+LED_STRIP      = ws.SK6812_STRIP_RGBW
+#LED_STRIP      = ws.SK6812W_STRIP
 
-'esp8266' means that you are using an ESP8266 module to control the LED strip
-and commands will be sent to the ESP8266 over WiFi.
-
-'pi' means that you are using a Raspberry Pi as a standalone unit to process
-audio input and control the LED strip directly.
-
-'blinkstick' means that a BlinkstickPro is connected to this PC which will be used
-to control the leds connected to it.
-"""
-
-if DEVICE == 'esp8266':
-    UDP_IP = '192.168.0.150'
-    """IP address of the ESP8266. Must match IP in ws2812_controller.ino"""
-    UDP_PORT = 7777
-    """Port number used for socket communication between Python and ESP8266"""
-    SOFTWARE_GAMMA_CORRECTION = False
-    """Set to False because the firmware handles gamma correction + dither"""
-
-if DEVICE == 'pi':
-    LED_PIN = 18
-    """GPIO pin connected to the LED strip pixels (must support PWM)"""
-    LED_FREQ_HZ = 800000
-    """LED signal frequency in Hz (usually 800kHz)"""
-    LED_DMA = 5
-    """DMA channel used for generating PWM signal (try 5)"""
-    BRIGHTNESS = 255
-    """Brightness of LED strip between 0 and 255"""
-    LED_INVERT = True
-    """Set True if using an inverting logic level converter"""
-    SOFTWARE_GAMMA_CORRECTION = True
-    """Set to True because Raspberry Pi doesn't use hardware dithering"""
-
-if DEVICE == 'blinkstick':
-    SOFTWARE_GAMMA_CORRECTION = True
-    """Set to True because blinkstick doesn't use hardware dithering"""
-
-USE_GUI = True
-"""Whether or not to display a PyQtGraph GUI plot of visualization"""
-
-DISPLAY_FPS = True
-"""Whether to display the FPS when running (can reduce performance)"""
-
-N_PIXELS = 60
-"""Number of pixels in the LED strip (must match ESP8266 firmware)"""
+SOFTWARE_GAMMA_CORRECTION = True
+"""Set to True because Raspberry Pi doesn't use hardware dithering"""
 
 GAMMA_TABLE_PATH = os.path.join(os.path.dirname(__file__), 'gamma_table.npy')
 """Location of the gamma correction table"""
@@ -63,7 +26,6 @@ FPS = 60
 FPS indicates the desired refresh rate, or frames-per-second, of the audio
 visualization. The actual refresh rate may be lower if the computer cannot keep
 up with desired FPS value.
-
 Higher framerates improve "responsiveness" and reduce the latency of the
 visualization but are more computationally expensive.
 
@@ -73,6 +35,7 @@ appear "sluggish" or out of sync with the audio being played if it is too low.
 The FPS should not exceed the maximum refresh rate of the LED strip, which
 depends on how long the LED strip is.
 """
+
 _max_led_FPS = int(((N_PIXELS * 30e-6) + 50e-6)**-1.0)
 assert FPS <= _max_led_FPS, 'FPS must be <= {}'.format(_max_led_FPS)
 

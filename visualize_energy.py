@@ -1,4 +1,6 @@
+import config
 import numpy as np
+import dsp
 from scipy.ndimage.filters import gaussian_filter1d
 p_filt = dsp.ExpFilter(np.tile(1, (3, config.N_PIXELS // 2)),
                        alpha_decay=0.1, alpha_rise=0.99)
@@ -6,7 +8,7 @@ p = np.tile(1.0, (3, config.N_PIXELS // 2))
 gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS),
                      alpha_decay=0.001, alpha_rise=0.99)
 
-def visualize_energy(y):
+def run(y):
     """Effect that expands from the center with increasing sound energy"""
     global p
     y = np.copy(y)

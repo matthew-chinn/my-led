@@ -1,3 +1,4 @@
+import config
 import time
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d
@@ -11,13 +12,15 @@ import visualize_scroll
 import visualize_energy
 import visualize_spectrum
 
-visualization_effect = visualize_spectrum
+effects = {
+  1: visualize_scroll,
+  2: visualize_energy,
+  3: visualize_spectrum
+}
+
+visualization_effect = 1
 """Visualization effect to display on the LED strip"""
 
-p = np.tile(1.0, (3, config.N_PIXELS // 2))
-
-fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
-                         alpha_decay=0.5, alpha_rise=0.99)
 mel_gain = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
                          alpha_decay=0.01, alpha_rise=0.99)
 mel_smoothing = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
@@ -63,7 +66,7 @@ def microphone_update(audio_samples):
         mel /= mel_gain.value
         mel = mel_smoothing.update(mel)
         # Map filterbank output onto LED strip
-        output = visualization_effect(mel)
+        output = effects[visualization_effect].run(mel)
         led.pixels = output
         led.update()
         if config.USE_GUI:

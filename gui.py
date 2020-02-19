@@ -1,7 +1,18 @@
+import dsp
+import config
+import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
+import visualize_energy
+import visualize_spectrum
+import led
+import visualize_scroll
+
+fft_plot_filter = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),
+                         alpha_decay=0.5, alpha_rise=0.99)
 
 def create():
+    global mel_curve,r_curve,g_curve,b_curve,app
     # Create GUI window
     app = QtGui.QApplication([])
     view = pg.GraphicsView()

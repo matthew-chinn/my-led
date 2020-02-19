@@ -1,4 +1,7 @@
 import numpy as np
+import dsp
+import config
+import util
 r_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2),
                        alpha_decay=0.2, alpha_rise=0.99)
 b_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2),
@@ -8,10 +11,10 @@ common_mode = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS // 2),
 
 _prev_spectrum = np.tile(0.01, config.N_PIXELS // 2)
 
-def visualize_spectrum(y):
+def run(y):
     """Effect that maps the Mel filterbank frequencies onto the LED strip"""
     global _prev_spectrum
-    y = np.copy(interpolate(y, config.N_PIXELS // 2))
+    y = np.copy(util.interpolate(y, config.N_PIXELS // 2))
     common_mode.update(y)
     diff = y - _prev_spectrum
     _prev_spectrum = np.copy(y)

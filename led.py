@@ -16,8 +16,9 @@ pixels = np.tile(1, (3, config.N_PIXELS))
 """Pixel values for the LED strip"""
 
 def start():
+    global strip
     # Create NeoPixel object with appropriate configuration.
-    strip = Adafruit_NeoPixel(config.N_PIXELS, config.LED_PIN, config.LED_FREQ_HZ, config.LED_DMA, config.LED_INVERT, config.LED_BRIGHTNESS, config.LED_CHANNEL, config.LED_STRIP)
+    strip = neopixel.Adafruit_NeoPixel(config.N_PIXELS, config.LED_PIN, config.LED_FREQ_HZ, config.LED_DMA, config.LED_INVERT, config.LED_BRIGHTNESS, config.LED_CHANNEL, config.LED_STRIP)
     # Intialize the library (must be called once before other functions).
     strip.begin()
 
@@ -38,11 +39,14 @@ def update():
     b = p[2][:].astype(int)
     rgb = np.bitwise_or(np.bitwise_or(r, g), b)
     # Update the pixels
-    for i in range(config.N_PIXELS):
+    for i in range(strip.numPixels()):
         # Ignore pixels if they haven't changed (saves bandwidth)
         if np.array_equal(p[:, i], _prev_pixels[:, i]):
             continue
-        strip._led_data[i] = rgb[i]
+        strip.setPixelColor(i, 0)
+    #    strip._led_data[i] = rgb[i]
+    for i in range(0,100,10):
+        strip.setPixelColor(i, 100)
     _prev_pixels = np.copy(p)
     strip.show()
 

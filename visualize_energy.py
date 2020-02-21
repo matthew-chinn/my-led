@@ -2,20 +2,23 @@ import config
 import numpy as np
 import dsp
 from scipy.ndimage.filters import gaussian_filter1d
-p_filt = dsp.ExpFilter(np.tile(1, (3, config.N_PIXELS // 2)),
-                       alpha_decay=0.1, alpha_rise=0.99)
-p = np.tile(1.0, (3, config.N_PIXELS // 2))
 gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS),
                      alpha_decay=0.001, alpha_rise=0.99)
 
 def run(y):
+  result = effect(y, config.N_PIXELS)
+  return result
+
+def effect(y, num_pixels):
     """Effect that expands from the center with increasing sound energy"""
-    global p
+    p = np.tile(1.0, (3, num_pixels // 2))
+    p_filt = dsp.ExpFilter(np.tile(1, (3, num_pixels // 2)),
+                           alpha_decay=0.1, alpha_rise=0.99)
     y = np.copy(y)
     gain.update(y)
     y /= gain.value
     # Scale by the width of the LED strip
-    y *= float((config.N_PIXELS // 2) - 1)
+    y *= float((num_pixels // 2) - 1)
     # Map color channels according to energy in the different freq bands
     scale = 0.9
     r = int(np.mean(y[:len(y) // 3]**scale))

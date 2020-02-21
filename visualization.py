@@ -10,15 +10,17 @@ import gui
 
 import visualize_scroll
 import visualize_energy
+import visualize_energy_rows
 import visualize_spectrum
 
 effects = {
   1: visualize_scroll,
   2: visualize_energy,
-  3: visualize_spectrum
+  3: visualize_spectrum,
+  4: visualize_energy_rows
 }
 
-visualization_effect = 1
+visualization_effect = 4
 """Visualization effect to display on the LED strip"""
 
 mel_gain = dsp.ExpFilter(np.tile(1e-1, config.N_FFT_BINS),

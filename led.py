@@ -43,10 +43,9 @@ def update():
         # Ignore pixels if they haven't changed (saves bandwidth)
         if np.array_equal(p[:, i], _prev_pixels[:, i]):
             continue
-        strip.setPixelColor(i, 0)
-    #    strip._led_data[i] = rgb[i]
-    for i in range(0,100,10):
-        strip.setPixelColor(i, 100)
+        strip._led_data[i] = rgb[i]
+    #for i in range(0,100,10):
+    #    strip.setPixelColor(i, 100)
     _prev_pixels = np.copy(p)
     strip.show()
 
@@ -54,14 +53,15 @@ def update():
 # If everything is working, you should see a red, green, and blue pixel scroll
 # across the LED strip continously
 if __name__ == '__main__':
+    start()
     import time
     # Turn all pixels off
     pixels *= 0
     pixels[0, 0] = 255  # Set 1st pixel red
-    pixels[1, 1] = 255  # Set 2nd pixel green
-    pixels[2, 2] = 255  # Set 3rd pixel blue
+    #pixels[1, 1] = 255  # Set 2nd pixel green
+    #pixels[2, 2] = 255  # Set 3rd pixel blue
     print('Starting LED strand test')
     while True:
         pixels = np.roll(pixels, 1, axis=1)
         update()
-        time.sleep(.1)
+        time.sleep(.5)

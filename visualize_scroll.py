@@ -4,12 +4,14 @@ import dsp
 from scipy.ndimage.filters import gaussian_filter1d
 
 gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS),
-                     alpha_decay=0.001, alpha_rise=0.99)
-p = np.tile(1.0, (3, config.N_PIXELS // 2))
+                 alpha_decay=0.001, alpha_rise=0.99)
 
-def run(y):
-    """Effect that originates in the center and scrolls outwards"""
-    global p
+# Maps rows to their p array.
+p_vals = {}
+"""Effect that originates in the center and scrolls outwards"""
+def effect(y, num_pixels, row_index):
+    if row_index not in p_vals:
+      p_vals[row_index] = np.tile(1.0, (3, num_pixels // 2))
     y = y**2.0
     gain.update(y)
     y /= gain.value
@@ -18,13 +20,13 @@ def run(y):
     g = int(np.max(y[len(y) // 3: 2 * len(y) // 3]))
     b = int(np.max(y[2 * len(y) // 3:]))
     # Scrolling effect window
-    p[:, 1:] = p[:, :-1]
-    p *= 0.98
-    p = gaussian_filter1d(p, sigma=0.2)
+    p_vals[row_index][:, 1:] = p_vals[row_index][:, :-1]
+    p_vals[row_index] *= 0.98
+    p_vals[row_index] = gaussian_filter1d(p_vals[row_index], sigma=0.2)
     # Create new color originating at the center
-    p[0, 0] = r
-    p[1, 0] = g
-    p[2, 0] = b
+    p_vals[row_index][0, 0] = r
+    p_vals[row_index][1, 0] = g
+    p_vals[row_index][2, 0] = b
     # Update the LED strip
-    return np.concatenate((p[:, ::-1], p), axis=1)
+    return np.concatenate((p_vals[row_index][:, ::-1], p_vals[row_index]), axis=1)
 
